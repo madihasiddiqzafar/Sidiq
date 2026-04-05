@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sidiq — Vouch for a Borrower</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy:        #0d1b3e;
+      --deep:        #080f22;
+      --surface:     #112248;
+      --surface-2:   #0f1e40;
+      --turquoise:   #2a8fa0;
+      --gold:        #c9922a;
+      --gold-light:  #e8b84b;
+      --ivory:       #f5efe0;
+      --ivory-dim:   rgba(245,239,224,0.6);
+      --ivory-faint: rgba(245,239,224,0.3);
+      --border:      rgba(201,146,42,0.2);
+      --border-dim:  rgba(201,146,42,0.1);
+      --success:     #2a9d6e;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--deep);
+      color: var(--ivory);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: url('pattern_1.jpg') center / cover no-repeat;
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(8,15,34,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: 'Cinzel', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.15em;
+      text-decoration: none;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .nav-wallet {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(201,146,42,0.08);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 2px;
+      font-size: 0.78rem;
+      color: var(--ivory-dim);
+    }
+
+    .wallet-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:0.6; transform:scale(0.85); }
+    }
+
+    .nav-tab {
+      font-family: 'Jost', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ivory-dim);
+      text-decoration: none;
+      padding: 6px 0;
+      border-bottom: 1px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .nav-tab:hover  { color: var(--ivory); }
+
+    /* ── PAGE ── */
+    .page {
+      position: relative;
+      z-index: 1;
+      padding-top: 64px;
+      min-height: 100vh;
+    }
+
+    .page-header {
+      background: linear-gradient(to bottom, rgba(13,27,62,0.9), transparent);
+      padding: 48px 48px 40px;
+      border-bottom: 1px solid var(--border-dim);
+    }
+
+    .page-greeting {
+      font-size: 0.72rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--turquoise);
+      margin-bottom: 8px;
+    }
+
+    .page-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .page-title em {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--gold-light);
+      font-size: 1.1em;
+    }
+
+    .page-subtitle {
+      font-size: 0.85rem;
+      color: var(--ivory-dim);
+    }
+
+    /* ── MAIN GRID ── */
+    .main-grid {
+      padding: 40px 48px;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 24px;
+      max-width: 1200px;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border-dim);
+      border-radius: 2px;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeUp 0.6s ease forwards;
+    }
+
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+
+    .card-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border-dim);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ivory-dim);
+    }
+
+    .card-badge {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .badge-gold    { background: rgba(201,146,42,0.15); color: var(--gold-light); border: 1px solid rgba(201,146,42,0.3); }
+    .badge-teal    { background: rgba(42,143,160,0.15); color: var(--turquoise);  border: 1px solid rgba(42,143,160,0.3); }
+    .badge-success { background: rgba(42,157,110,0.15); color: #4ade80;           border: 1px solid rgba(42,157,110,0.3); }
+
+    .card-body { padding: 32px; }
+
+    /* ── FORM ── */
+    .form-section { margin-bottom: 32px; }
+
+    .form-section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--turquoise);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-dim);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-section-title::before {
+      content: '';
+      width: 4px;
+      height: 14px;
+      background: var(--turquoise);
+      border-radius: 2px;
+    }
+
+    .field { margin-bottom: 20px; }
+
+    .field label {
+      display: block;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ivory-dim);
+      margin-bottom: 8px;
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      background: rgba(6,14,28,0.7);
+      border: 1px solid rgba(201,146,42,0.15);
+      color: var(--ivory);
+      padding: 14px 18px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 300;
+      outline: none;
+      border-radius: 2px;
+      transition: border-color 0.3s;
+    }
+
+    .field input:focus,
+    .field textarea:focus { border-color: var(--gold); }
+
+    .field input::placeholder,
+    .field textarea::placeholder { color: var(--ivory-faint); }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.6;
+    }
+
+    .field-hint {
+      font-size: 0.72rem;
+      color: var(--ivory-faint);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    /* ── BORROWER PREVIEW ── */
+    .borrower-preview {
+      background: rgba(6,14,28,0.5);
+      border: 1px solid var(--border-dim);
+      border-radius: 2px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      display: none;
+    }
+
+    .borrower-preview.show { display: block; }
+
+    .preview-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ivory-faint);
+      margin-bottom: 12px;
+    }
+
+    .preview-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-dim);
+      font-size: 0.82rem;
+    }
+
+    .preview-row:last-child { border-bottom: none; }
+    .preview-row-label { color: var(--ivory-dim); }
+    .preview-row-val   { font-family: 'Cinzel', serif; font-size: 0.85rem; color: var(--ivory); }
+
+    /* ── COMMITMENT FEE ── */
+    .commitment-box {
+      background: rgba(201,146,42,0.05);
+      border: 1px solid rgba(201,146,42,0.2);
+      border-radius: 2px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+    }
+
+    .commitment-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--gold-light);
+      margin-bottom: 8px;
+    }
+
+    .commitment-amount {
+      font-family: 'Cinzel', serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .commitment-amount span {
+      font-size: 1rem;
+      color: var(--ivory-dim);
+      margin-left: 6px;
+    }
+
+    .commitment-note {
+      font-size: 0.78rem;
+      line-height: 1.7;
+      color: var(--ivory-dim);
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-dim);
+    }
+
+    /* ── ACKNOWLEDGEMENT ── */
+    .ack-box {
+      background: rgba(6,14,28,0.4);
+      border: 1px solid var(--border-dim);
+      border-radius: 2px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+    }
+
+    .ack-text {
+      font-size: 0.84rem;
+      line-height: 1.8;
+      color: var(--ivory-dim);
+      margin-bottom: 16px;
+    }
+
+    .ack-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .ack-check input {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--gold);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .ack-check label {
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: var(--ivory-dim);
+      cursor: pointer;
+    }
+
+    /* ── SUBMIT ── */
+    .btn-submit {
+      width: 100%;
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      padding: 18px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.35s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn-submit:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(201,146,42,0.3);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ── SUCCESS STATE ── */
+    .success-state {
+      text-align: center;
+      padding: 64px 32px;
+      display: none;
+    }
+
+    .success-state.show { display: block; }
+
+    .success-icon  { font-size: 3rem; margin-bottom: 24px; }
+
+    .success-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--ivory);
+      margin-bottom: 12px;
+    }
+
+    .success-desc {
+      font-size: 0.88rem;
+      line-height: 1.8;
+      color: var(--ivory-dim);
+      max-width: 420px;
+      margin: 0 auto 24px;
+    }
+
+    .success-hash {
+      font-size: 0.75rem;
+      color: var(--turquoise);
+      font-family: monospace;
+      padding: 12px 16px;
+      background: rgba(42,143,160,0.05);
+      border: 1px solid rgba(42,143,160,0.2);
+      border-radius: 2px;
+      margin-bottom: 32px;
+      word-break: break-all;
+    }
+
+    .btn-back {
+      display: inline-block;
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      padding: 12px 32px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .btn-back:hover {
+      background: var(--gold);
+      color: var(--navy);
+      transform: translateY(-2px);
+    }
+
+    /* ── SIDEBAR INFO ── */
+    .info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .info-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 20px;
+      background: var(--surface-2);
+      border: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+
+    .info-item:hover { border-color: var(--border-dim); }
+
+    .info-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(201,146,42,0.1);
+      border: 1px solid rgba(201,146,42,0.2);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .info-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--ivory);
+      margin-bottom: 6px;
+    }
+
+    .info-desc {
+      font-size: 0.78rem;
+      line-height: 1.7;
+      color: var(--ivory-dim);
+    }
+
+    /* ── VOUCHER BALANCE ── */
+    .voucher-balance {
+      padding: 24px;
+      border-bottom: 1px solid var(--border-dim);
+    }
+
+    .balance-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ivory-faint);
+      margin-bottom: 8px;
+    }
+
+    .balance-num {
+      font-family: 'Cinzel', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .balance-sub {
+      font-size: 0.75rem;
+      color: var(--ivory-faint);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── CONFIRM MODAL ── */
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: rgba(6,14,28,0.92);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s;
+    }
+
+    .modal-bg.open { opacity: 1; pointer-events: all; }
+
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 48px;
+      width: 90%;
+      max-width: 460px;
+      border-radius: 2px;
+      transform: translateY(20px);
+      transition: transform 0.35s;
+      text-align: center;
+    }
+
+    .modal-bg.open .modal-box { transform: translateY(0); }
+
+    .modal-icon  { font-size: 2rem; margin-bottom: 16px; }
+    .modal-title { font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 600; letter-spacing: 0.08em; color: var(--ivory); margin-bottom: 10px; }
+    .modal-sub   { font-size: 0.82rem; line-height: 1.7; color: var(--ivory-dim); margin-bottom: 28px; }
+
+    .modal-details {
+      background: rgba(6,14,28,0.5);
+      border: 1px solid var(--border-dim);
+      border-radius: 2px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .modal-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border-dim);
+    }
+
+    .modal-row:last-child { border-bottom: none; }
+    .modal-row-label { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ivory-faint); }
+    .modal-row-val   { font-family: 'Cinzel', serif; font-size: 0.88rem; font-weight: 600; color: var(--gold); }
+
+    .modal-warning {
+      font-size: 0.75rem;
+      color: var(--ivory-faint);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      padding: 10px 16px;
+      border-left: 2px solid rgba(201,146,42,0.3);
+      text-align: left;
+    }
+
+    .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .modal-btn-cancel {
+      background: transparent;
+      color: var(--ivory-dim);
+      border: 1px solid var(--border-dim);
+      padding: 14px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    .modal-btn-cancel:hover { border-color: var(--gold); color: var(--gold); }
+
+    .modal-btn-confirm {
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      padding: 14px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    .modal-btn-confirm:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 1000;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 16px 24px;
+      border-radius: 2px;
+      max-width: 380px;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.4s;
+      pointer-events: none;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; pointer-events: all; }
+    .toast-title { font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.1em; color: var(--ivory); margin-bottom: 6px; }
+    .toast-msg   { font-size: 0.78rem; line-height: 1.6; color: var(--ivory-dim); }
+    .toast-hash  { font-size: 0.7rem; color: var(--turquoise); font-family: monospace; margin-top: 8px; word-break: break-all; }
+    .toast.success { border-color: rgba(42,157,110,0.4); }
+    .toast.error   { border-color: rgba(201,74,42,0.4); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .main-grid   { grid-template-columns: 1fr; padding: 24px; }
+      nav          { padding: 0 24px; }
+      .page-header { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">SIDIQ</a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="nav-tab">Borrower</a>
+    <a href="lender.html"    class="nav-tab">Lender</a>
+    <a href="vouch.html"     class="nav-tab active">Vouch</a>
+    <div class="nav-wallet">
+      <div class="wallet-dot"></div>
+      <span id="navWalletAddr">Loading...</span>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+
+  <div class="page-header">
+    <p class="page-greeting">Community Trust</p>
+    <h1 class="page-title">Vouch for a <em>trusted borrower</em></h1>
+    <p class="page-subtitle">Your word — backed by 1 SDQ — recorded permanently on the XRP Ledger. Vouch only for those you genuinely know and trust.</p>
+  </div>
+
+  <div class="main-grid">
+
+    <!-- MAIN FORM -->
+    <div>
+      <div class="card" id="vouchCard">
+        <div class="card-header">
+          <span class="card-title">Submit a Vouch</span>
+          <span class="card-badge badge-gold">1 SDQ Commitment</span>
+        </div>
+
+        <!-- Form body -->
+        <div class="card-body" id="formBody">
+
+          <!-- Your Balance -->
+          <div class="voucher-balance" style="background:rgba(6,14,28,0.3);border:1px solid var(--border-dim);border-radius:2px;margin-bottom:28px;">
+            <p class="balance-label">Your SDQ Balance</p>
+            <p class="balance-num" id="voucherBalance">—</p>
+            <p class="balance-sub">Sidiq Community Token · 1 SDQ will be sent as commitment</p>
+          </div>
+
+          <!-- Borrower address -->
+          <div class="form-section">
+            <p class="form-section-title">Borrower Details</p>
+            <div class="field">
+              <label>Borrower Wallet Address</label>
+              <input
+                type="text"
+                id="borrowerAddress"
+                placeholder="r... borrower's XRP wallet address"
+                oninput="handleAddressInput(this.value)"
+              />
+              <p class="field-hint">The borrower should share their Sidiq wallet address with you privately. Never share your own seed phrase.</p>
+            </div>
+
+            <!-- Borrower preview loads here -->
+            <div class="borrower-preview" id="borrowerPreview">
+              <p class="preview-label">Borrower Profile</p>
+              <div class="preview-row">
+                <span class="preview-row-label">Wallet</span>
+                <span class="preview-row-val" id="previewAddr">—</span>
+              </div>
+              <div class="preview-row">
+                <span class="preview-row-label">Reputation Score</span>
+                <span class="preview-row-val" id="previewScore">—</span>
+              </div>
+              <div class="preview-row">
+                <span class="preview-row-label">Trust Tier</span>
+                <span class="preview-row-val" id="previewTier">—</span>
+              </div>
+              <div class="preview-row">
+                <span class="preview-row-label">Previous Repayments</span>
+                <span class="preview-row-val" id="previewRepayments">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Your statement -->
+          <div class="form-section">
+            <p class="form-section-title">Your Statement</p>
+            <div class="field">
+              <label>How do you know this borrower?</label>
+              <textarea
+                id="vouchStatement"
+                placeholder="I have known this person for... They are trustworthy because..."
+              ></textarea>
+              <p class="field-hint">This statement is recorded on chain with your vouch. Keep it honest and specific.</p>
+            </div>
+          </div>
+
+          <!-- Commitment fee -->
+          <div class="commitment-box">
+            <p class="commitment-title">Commitment Fee</p>
+            <p class="commitment-amount">1 <span>SDQ</span></p>
+            <p class="commitment-note">
+              Vouching sends 1 SDQ directly to the borrower as a gift — not a loan. This is your financial commitment that proves your vouch is genuine. This amount is non-returnable. It is yours to give, freely and in the spirit of Qard Hasan.
+            </p>
+          </div>
+
+          <!-- Acknowledgement -->
+          <div class="ack-box">
+            <p class="ack-text">
+              By vouching for this borrower I confirm that I personally know them and genuinely believe they will repay their loan. I understand that if they miss a repayment my own reputation score will decrease. My vouch is permanent and publicly visible on the XRP Ledger.
+            </p>
+            <div class="ack-check">
+              <input type="checkbox" id="ackCheck"/>
+              <label for="ackCheck">
+                I vouch for this borrower freely and honestly. I understand the consequences of vouching for someone who defaults.
+              </label>
+            </div>
+          </div>
+
+          <button class="btn-submit" id="submitBtn" onclick="openModal()">
+            Submit Vouch On-Chain
+          </button>
+
+        </div>
+
+        <!-- Success state -->
+        <div class="success-state" id="successState">
+          <div class="success-icon">🤝</div>
+          <h2 class="success-title">Vouch Recorded</h2>
+          <p class="success-desc">
+            Your vouch has been permanently recorded on the XRP Ledger. The borrower's reputation score has increased. Your word is now verified on chain — forever.
+          </p>
+          <p class="success-hash" id="successHash"></p>
+          <a href="dashboard.html" class="btn-back">Return to Dashboard</a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+
+      <!-- What vouching means -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">What Vouching Means</span>
+          <span class="card-badge badge-teal">Qard Hasan</span>
+        </div>
+        <div class="info-list">
+          <div class="info-item">
+            <div class="info-icon">🤝</div>
+            <div>
+              <p class="info-title">Your Word, On Chain</p>
+              <p class="info-desc">Your vouch is a permanent on-chain statement. It cannot be deleted or altered. Choose carefully.</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">⭐</div>
+            <div>
+              <p class="info-title">Reputation Grows Together</p>
+              <p class="info-desc">When the borrower repays your reputation increases too. Good judgment is rewarded.</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">⚠️</div>
+            <div>
+              <p class="info-title">Shared Accountability</p>
+              <p class="info-desc">If the borrower misses a repayment your reputation score decreases. Vouch only for those you truly know.</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">🎁</div>
+            <div>
+              <p class="info-title">1 SDQ is a Gift</p>
+              <p class="info-desc">The 1 SDQ commitment goes to the borrower as community support. It is not a loan and does not return to you.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Your reputation -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Your Reputation</span>
+          <span class="card-badge badge-success">Live</span>
+        </div>
+        <div class="card-body">
+          <div style="display:flex;align-items:center;gap:20px;margin-bottom:20px;">
+            <div style="font-family:'Cinzel',serif;font-size:3rem;font-weight:700;color:var(--gold);line-height:1;" id="myScore">—</div>
+            <div>
+              <p style="font-family:'Cinzel',serif;font-size:0.9rem;font-weight:600;color:var(--ivory);margin-bottom:4px;" id="myTier">Loading...</p>
+              <p style="font-size:0.75rem;color:var(--ivory-faint);">Your current trust tier</p>
+            </div>
+          </div>
+          <div style="font-size:0.8rem;line-height:1.8;color:var(--ivory-dim);padding:12px 16px;border:1px solid var(--border-dim);border-radius:2px;background:rgba(6,14,28,0.3);">
+            Vouching for someone who repays will add <span style="color:#4ade80;font-family:'Cinzel',serif;">+5</span> to your score. Vouching for someone who defaults will deduct points from your score.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-bg" id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-icon">🤝</div>
+    <h2 class="modal-title">Confirm Your Vouch</h2>
+    <p class="modal-sub">You are about to record a permanent vouch on the XRP Ledger. This cannot be reversed.</p>
+    <div class="modal-details">
+      <div class="modal-row">
+        <span class="modal-row-label">Borrower</span>
+        <span class="modal-row-val" id="modalBorrower" style="font-size:0.72rem;color:var(--turquoise);font-family:monospace;">—</span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-row-label">Commitment</span>
+        <span class="modal-row-val">1 SDQ — Gift</span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-row-label">Borrower rep change</span>
+        <span class="modal-row-val" style="color:#4ade80">+5 points</span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-row-label">Network</span>
+        <span class="modal-row-val" style="color:var(--turquoise)">XRPL Testnet</span>
+      </div>
+    </div>
+    <p class="modal-warning">This vouch is permanent and publicly visible on the XRP Ledger. Your reputation is now tied to this borrower's behaviour.</p>
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn-confirm" id="modalConfirmBtn" onclick="executeVouch()">
+        Confirm Vouch
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <p class="toast-title" id="toastTitle"></p>
+  <p class="toast-msg"   id="toastMsg"></p>
+  <p class="toast-hash"  id="toastHash"></p>
+</div>
+
+<script src="https://unpkg.com/xrpl@2.7.0/build/xrpl-latest-min.js"></script>
+<script src="sidiq.js"></script>
+<script>
+
+  // ── DEMO CONFIG ──
+  // Paste Khalid's details here
+  const DEMO_SEED    = "paste_khalid_seed_here"
+  const DEMO_ADDRESS = "paste_khalid_address_here"
+  const DEMO_NAME    = "Khalid Ibrahim"
+
+  // ── INIT ──
+  window.addEventListener('load', async () => {
+    await new Promise(r => setTimeout(r, 500))
+
+    const short = DEMO_ADDRESS.slice(0,6) + '...' + DEMO_ADDRESS.slice(-4)
+    document.getElementById('navWalletAddr').textContent = short
+
+    await Promise.all([loadVoucherBalance(), loadMyReputation()])
+  })
+
+  // ── LOAD VOUCHER BALANCE ──
+  async function loadVoucherBalance() {
+    try {
+      await new Promise(r => setTimeout(r, 2000))
+      const sdq = await getSDQBalance(DEMO_ADDRESS)
+      document.getElementById('voucherBalance').textContent = sdq.toFixed(2) + ' SDQ'
+    } catch(e) {
+      document.getElementById('voucherBalance').textContent = '— SDQ'
+    }
+  }
+
+  // ── LOAD MY REPUTATION ──
+  async function loadMyReputation() {
+    try {
+      const rep = await getReputation(DEMO_ADDRESS)
+      document.getElementById('myScore').textContent = rep.score
+      document.getElementById('myTier').textContent  = rep.tier
+    } catch(e) {
+      document.getElementById('myScore').textContent = '50'
+      document.getElementById('myTier').textContent  = 'Newcomer'
+    }
+  }
+
+  // ── HANDLE ADDRESS INPUT ──
+  let lookupTimeout = null
+
+  async function handleAddressInput(val) {
+    const preview = document.getElementById('borrowerPreview')
+    if (!val || !val.startsWith('r') || val.length < 25) {
+      preview.classList.remove('show')
+      return
+    }
+
+    // Debounce — wait 800ms after typing stops
+    clearTimeout(lookupTimeout)
+    lookupTimeout = setTimeout(async () => {
+      try {
+        const rep = await getReputation(val)
+        const short = val.slice(0,6) + '...' + val.slice(-4)
+        document.getElementById('previewAddr').textContent       = short
+        document.getElementById('previewScore').textContent      = rep.score + ' / 100'
+        document.getElementById('previewTier').textContent       = rep.tier
+        document.getElementById('previewRepayments').textContent = rep.repayments
+        preview.classList.add('show')
+      } catch(e) {
+        preview.classList.remove('show')
+      }
+    }, 800)
+  }
+
+  // ── OPEN MODAL ──
+  function openModal() {
+    const address   = document.getElementById('borrowerAddress').value.trim()
+    const statement = document.getElementById('vouchStatement').value.trim()
+    const checked   = document.getElementById('ackCheck').checked
+
+    if (!address || !address.startsWith('r')) {
+      showToast('Missing Address', 'Please enter a valid borrower wallet address.', '', 'error')
+      return
+    }
+
+    if (address === DEMO_ADDRESS) {
+      showToast('Invalid', 'You cannot vouch for yourself.', '', 'error')
+      return
+    }
+
+    if (!checked) {
+      showToast('Acknowledgement Required', 'Please read and check the acknowledgement before vouching.', '', 'error')
+      return
+    }
+
+    const short = address.slice(0,6) + '...' + address.slice(-4)
+    document.getElementById('modalBorrower').textContent = short
+    document.getElementById('confirmModal').classList.add('open')
+  }
+
+  function closeModal() {
+    document.getElementById('confirmModal').classList.remove('open')
+  }
+
+  // ── EXECUTE VOUCH ──
+  async function executeVouch() {
+    const address   = document.getElementById('borrowerAddress').value.trim()
+    const btn       = document.getElementById('modalConfirmBtn')
+    btn.disabled    = true
+    btn.textContent = 'Submitting...'
+
+    try {
+      const result = await submitVouch(DEMO_SEED, address)
+      closeModal()
+
+      if (result.success) {
+        document.getElementById('formBody').style.display = 'none'
+        document.getElementById('successState').classList.add('show')
+        document.getElementById('successHash').textContent =
+          'Transaction Hash: ' + result.hash +
+          '\nView at: testnet.xrpl.org/transactions/' + result.hash
+      } else {
+        showToast('Transaction Failed', result.error || 'Please try again.', '', 'error')
+      }
+
+    } catch(e) {
+      showToast('Error', e.message, '', 'error')
+    } finally {
+      btn.disabled    = false
+      btn.textContent = 'Confirm Vouch'
+    }
+  }
+
+  // ── TOAST ──
+  function showToast(title, msg, hash, type) {
+    const toast = document.getElementById('toast')
+    document.getElementById('toastTitle').textContent = title
+    document.getElementById('toastMsg').textContent   = msg
+    document.getElementById('toastHash').textContent  = hash ? 'TX: ' + hash : ''
+    toast.className = `toast show ${type || ''}`
+    setTimeout(() => { toast.className = 'toast' }, 5000)
+  }
+
+  // Close modal on background click
+  document.getElementById('confirmModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal()
+  })
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal()
+  })
+
+</script>
+</body>
+</html>
