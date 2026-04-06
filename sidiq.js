@@ -8,9 +8,9 @@
 
 // ── DEMO WALLET CONFIG ──
 // Paste your values from demo_setup.js and create_sdq_token.js
-const POOL_ADDRESS = "paste_pool_address"
-const POOL_SEED    = "paste_pool_seed"
-const SDQ_ISSUER   = "paste_SDQ_issuer_address"
+const POOL_ADDRESS = "rMNNVayuWnBmxdFJ3NK5C4rTQ1rLhTJHQU"
+const POOL_SEED    = "paste pool seed"
+const SDQ_ISSUER   = "rGzWex8HZdATyzwUk2gtq1UNwKM4eihDvN"
 
 // ── HELPER: Encode outgoing memo data to hex ──
 function toHex(data) {
@@ -94,6 +94,7 @@ async function getPoolBalance() {
 // REPUTATION ENGINE
 // ============================================================
 
+// ── CALCULATE REPUTATION SCORE ──
 async function getReputation(address) {
   const client = await connectToXRPL()
   try {
@@ -104,10 +105,11 @@ async function getReputation(address) {
     })
     await client.disconnect()
 
-    let score = 50
-    let repayments = []
-    let vouches = []
-    let missed_tranches = 0
+    let score         = 50
+    let repayments    = []
+    let vouches       = []
+    let contributions = []
+    let missed        = 0
 
     for (const tx of response.result.transactions) {
       const transaction = tx.tx || tx.tx_json
@@ -116,59 +118,87 @@ async function getReputation(address) {
       for (const memo of transaction.Memos) {
         if (!memo.Memo || !memo.Memo.MemoData) continue
         try {
-          // Use browser-compatible hex decoder
           const decoded = fromHex(memo.Memo.MemoData)
-          const data = JSON.parse(decoded)
+          const data    = JSON.parse(decoded)
 
+          // Borrower — repayment
           if (data.type === "SIDIQ_REPAYMENT") {
             score += 10
             repayments.push(data)
           }
-          if (data.type === "SIDIQ_VOUCH") {
+
+          // Borrower — missed tranche
+          if (data.type === "SIDIQ_MISSED_TRANCHE") {
+            score -= 20
+            missed++
+          }
+
+          // Vouch received — someone vouched for this address
+          if (data.type === "SIDIQ_VOUCH" &&
+              data.borrower_address === address) {
             score += 5
             vouches.push(data)
           }
-          if (data.type === "SIDIQ_MISSED_TRANCHE") {
-            score -= 20
-            missed_tranches++
+
+          // Vouch given — this address vouched for someone
+          if (data.type === "SIDIQ_VOUCH" &&
+              data.voucher_address === address) {
+            score += 3
           }
+
+          // Lender contribution
+          if (data.type === "SIDIQ_CONTRIBUTION" &&
+              data.lender === address) {
+            score += 8
+            contributions.push(data)
+          }
+
         } catch(e) {}
       }
     }
 
-    // Cap score between 0 and 100
     score = Math.max(0, Math.min(100, score))
 
-    // Determine trust tier
     let tier = "Newcomer"
     if (score >= 80)      tier = "Verified"
     else if (score >= 60) tier = "Contributor"
 
+    // Determine role
+    let role = "Community Member"
+    if (repayments.length > 0 && contributions.length === 0) role = "Borrower"
+    if (contributions.length > 0 && repayments.length === 0) role = "Lender"
+    if (contributions.length > 0 && repayments.length > 0)   role = "Lender & Borrower"
+
     return {
       score,
       tier,
-      repayments: repayments.length,
-      vouches: vouches.length,
-      missed_tranches,
+      role,
+      repayments:      repayments.length,
+      vouches:         vouches.length,
+      contributions:   contributions.length,
+      missed_tranches: missed,
       borrowing_limit: score * 2,
       repayment_history: repayments,
-      vouch_history: vouches
+      vouch_history:     vouches
     }
 
   } catch(e) {
     await client.disconnect()
     return {
-      score: 50,
-      tier: "Newcomer",
-      repayments: 0,
-      vouches: 0,
+      score:           50,
+      tier:            "Newcomer",
+      role:            "Community Member",
+      repayments:      0,
+      vouches:         0,
+      contributions:   0,
       missed_tranches: 0,
       borrowing_limit: 100,
       repayment_history: [],
-      vouch_history: []
+      vouch_history:     []
     }
   }
 }
+
 // ── GET ACTIVE LOAN FOR BORROWER ──
 async function getActiveLoan(address) {
   const client = await connectToXRPL()
@@ -275,6 +305,83 @@ async function submitLoanApplication(borrower_seed, amount_sdq, purpose) {
   }
 }
 
+// ── CREATE ESCROW (Pool → Borrower) ──
+async function createEscrow(pool_seed, borrower_address, amount_xrp, tranche_number) {
+  const client = await connectToXRPL()
+  try {
+    const pool = xrpl.Wallet.fromSeed(pool_seed)
+
+    const ripple_offset = 946684800
+    const release_time  = Math.floor(Date.now() / 1000) - ripple_offset + 30
+    const cancel_time   = Math.floor(Date.now() / 1000) - ripple_offset + (30 * 24 * 60 * 60)
+
+    const loan_details = {
+      type:           "SIDIQ_LOAN_DISBURSEMENT",
+      borrower:       borrower_address,
+      amount_sdq:     amount_xrp,
+      tranche:        tranche_number,
+      total_tranches: 4,
+      timestamp:      new Date().toISOString()
+    }
+
+    const escrow_tx = {
+      TransactionType: "EscrowCreate",
+      Account:         pool.classicAddress,
+      Amount:          xrpl.xrpToDrops(amount_xrp),
+      Destination:     borrower_address,
+      FinishAfter:     release_time,
+      CancelAfter:     cancel_time,
+      Memos: [{ Memo: { MemoData: toHex(loan_details) } }]
+    }
+
+    const prepared = await client.autofill(escrow_tx)
+    const signed   = pool.sign(prepared)
+    const result   = await client.submitAndWait(signed.tx_blob)
+    await client.disconnect()
+    return { success: true, hash: result.result.hash }
+  } catch(e) {
+    await client.disconnect()
+    return { success: false, error: e.message }
+  }
+}
+
+// ── CLAIM ESCROW (Borrower claims) ──
+async function claimEscrow(borrower_seed, pool_address) {
+  const client = await connectToXRPL()
+  try {
+    const borrower = xrpl.Wallet.fromSeed(borrower_seed)
+
+    // Find active escrow on pool wallet
+    const escrows = await client.request({
+      command: "account_objects",
+      account: pool_address,
+      type:    "escrow"
+    })
+
+    if (escrows.result.account_objects.length === 0) {
+      await client.disconnect()
+      return { success: false, error: "No active escrow found" }
+    }
+
+    const escrow = escrows.result.account_objects[0]
+
+    const finish_tx = {
+      TransactionType: "EscrowFinish",
+      Account:         borrower.classicAddress,
+      Owner:           pool_address,
+      OfferSequence:   escrow.Sequence
+    }
+
+    const prepared = await client.autofill(finish_tx)
+    const signed   = borrower.sign(prepared)
+    const result   = await client.submitAndWait(signed.tx_blob)
+    await client.disconnect()
+    return { success: true, hash: result.result.hash }
+  } catch(e) {
+    await client.disconnect()
+    return { success: false, error: e.message }
+  }
+}
 // ============================================================
 // LENDER CONTRIBUTION
 // ============================================================

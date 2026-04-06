@@ -692,7 +692,7 @@
 
   <div class="page-header">
     <p class="page-greeting">Lender Dashboard</p>
-    <h1 class="page-title">Welcome back!</h1>
+    <h1 class="page-title">Welcome back, <em id="lenderName">Amina</em></h1>
     <p class="page-subtitle">Your generosity is recorded forever on the XRP Ledger. Thank you for supporting your community.</p>
   </div>
 
@@ -768,37 +768,113 @@
 
       <!-- Pool Overview Card -->
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">Community Pool</span>
-          <span class="card-badge badge-success">Active</span>
-        </div>
-        <div class="card-body">
-          <div class="pool-stats">
-            <div class="pool-stat">
-              <div class="pool-stat-num" id="poolBalance">—</div>
-              <div class="pool-stat-label">Pool Balance (SDQ)</div>
-            </div>
-            <div class="pool-stat">
-              <div class="pool-stat-num" style="color:#4ade80">0%</div>
-              <div class="pool-stat-label">Interest Rate</div>
-            </div>
-            <div class="pool-stat">
-              <div class="pool-stat-num" style="color:var(--turquoise)">XRPL</div>
-              <div class="pool-stat-label">Network</div>
-            </div>
+       <div class="card-header">
+         <span class="card-title">Community Pool</span>
+         <span class="card-badge badge-success">Active</span>
+       </div>
+       <div class="card-body">
+         <div class="pool-stats">
+           <div class="pool-stat">
+             <div class="pool-stat-num" id="poolBalance">—</div>
+             <div class="pool-stat-label">Pool Balance (SDQ)</div>
+           </div>
+           <div class="pool-stat">
+             <div class="pool-stat-num" style="color:#4ade80">0%</div>
+             <div class="pool-stat-label">Interest Rate</div>
+           </div>
+           <div class="pool-stat">
+             <div class="pool-stat-num" style="color:var(--turquoise)">XRPL</div>
+             <div class="pool-stat-label">Network</div>
+           </div>
+         </div>
+
+         <p style="font-size:0.82rem;line-height:1.8;color:var(--ivory-dim);margin-bottom:20px;">
+           The Sidiq community pool is a collective fund contributed to by lenders like you. Every SDQ in this pool is available to support a borrower in need — interest free, transparently recorded, and governed by community trust.
+         </p>
+
+         <a href="https://testnet.xrpl.org/accounts/your_wallet_address"
+            target="_blank"
+            style="font-size:0.75rem;color:var(--turquoise);text-decoration:none;letter-spacing:0.1em;font-family:'Cinzel',serif;">
+           View Pool on XRPL Explorer →
+         </a>
+
+         <!-- Release Tranche Section -->
+         <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--border-dim);">
+
+           <p style="font-family:'Cinzel',serif;font-size:0.78rem;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--ivory-dim);margin-bottom:20px;">
+             Release Loan Tranche
+           </p>
+
+           <div style="margin-bottom:16px;">
+             <label style="display:block;font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--ivory-dim);margin-bottom:8px;">
+               Borrower Wallet Address
+             </label>
+             <input
+               type="text"
+               id="escrowBorrower"
+               placeholder="r... borrower wallet address"
+               style="width:100%;background:rgba(6,14,28,0.7);border:1px solid rgba(201,146,42,0.15);color:var(--ivory);padding:12px 16px;font-family:'Jost',sans-serif;font-size:0.85rem;outline:none;border-radius:2px;transition:border-color 0.3s;"
+               onfocus="this.style.borderColor='var(--gold)'"
+               onblur="this.style.borderColor='rgba(201,146,42,0.15)'"
+             />
+           </div>
+
+           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+             <div>
+               <label style="display:block;font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--ivory-dim);margin-bottom:8px;">
+                 Amount (XRP)
+               </label>
+               <input
+                 type="number"
+                 id="escrowAmount"
+                 value="6"
+                 min="1"
+                 max="50"
+                 style="width:100%;background:rgba(6,14,28,0.7);border:1px solid rgba(201,146,42,0.15);color:var(--ivory);padding:12px 16px;font-family:'Cinzel',serif;font-size:1rem;outline:none;border-radius:2px;transition:border-color 0.3s;"
+                 onfocus="this.style.borderColor='var(--gold)'"
+                 onblur="this.style.borderColor='rgba(201,146,42,0.15)'"
+               />
+             </div>
+             <div>
+               <label style="display:block;font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--ivory-dim);margin-bottom:8px;">
+                 Tranche Number
+               </label>
+               <select
+                 id="escrowTranche"
+                 style="width:100%;background:rgba(6,14,28,0.7);border:1px solid rgba(201,146,42,0.15);color:var(--ivory);padding:12px 16px;font-family:'Jost',sans-serif;font-size:0.85rem;outline:none;border-radius:2px;transition:border-color 0.3s;appearance:none;"
+                 onfocus="this.style.borderColor='var(--gold)'"
+                 onblur="this.style.borderColor='rgba(201,146,42,0.15)'"
+               >
+                 <option value="1">Tranche 1 — 15%</option>
+                 <option value="2">Tranche 2 — 25%</option>
+                 <option value="3">Tranche 3 — 35%</option>
+                 <option value="4">Tranche 4 — 25%</option>
+               </select>
+             </div>
+           </div>
+
+           <!-- Release time info -->
+          <div style="background:rgba(42,143,160,0.05);border:1px solid rgba(42,143,160,0.15);border-radius:2px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;">
+            <span style="color:var(--turquoise);font-size:0.9rem;flex-shrink:0;">🔒</span>
+            <p style="font-size:0.75rem;line-height:1.6;color:var(--ivory-dim);">
+              Funds are locked in <strong style="color:var(--ivory);font-weight:400;">XRPL native escrow</strong> and automatically release to the borrower after 30 seconds. If unclaimed within 30 days the funds return to the pool.
+            </p>
           </div>
-          <p style="font-size:0.82rem;line-height:1.8;color:var(--ivory-dim);">
-            The Sidiq community pool is a collective fund contributed to by lenders like you. Every SDQ in this pool is available to support a borrower in need — interest free, transparently recorded, and governed by community trust.
-          </p>
-          <div style="margin-top:16px;">
-            <a href="https://testnet.xrpl.org/accounts/rBUzhFCEUx8wAnqfLdXdgXaL73J9Y7DpRy"
-               target="_blank"
-               style="font-size:0.75rem;color:var(--turquoise);text-decoration:none;letter-spacing:0.1em;font-family:'Cinzel',serif;">
-              View Pool on XRPL Explorer →
-            </a>
-          </div>
+
+          <button
+            class="btn-contribute"
+            style="background:var(--turquoise);"
+            onclick="openEscrowModal()"
+            onmouseover="this.style.background='#3aafc2'"
+            onmouseout="this.style.background='var(--turquoise)'"
+          >
+            Release Tranche via Escrow
+          </button>
+
         </div>
       </div>
+    </div>
+
 
       <!-- Active Loans Card -->
       <div class="card">
@@ -831,6 +907,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- CONFIRM MODAL -->
 <div class="modal-bg" id="confirmModal">
@@ -866,6 +943,40 @@
   </div>
 </div>
 
+<!-- ESCROW MODAL -->
+<div class="modal-bg" id="escrowModal">
+  <div class="modal-box">
+    <div class="modal-icon">🔒</div>
+    <h2 class="modal-title">Confirm Escrow Release</h2>
+    <p class="modal-sub">You are about to lock funds in XRPL escrow for the borrower. Funds release automatically after 30 seconds.</p>
+    <div class="modal-details">
+      <div class="modal-row">
+        <span class="modal-row-label">Borrower</span>
+        <span class="modal-row-val" id="escrowModalBorrower" style="font-size:0.72rem;color:var(--turquoise);font-family:monospace;">—</span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-row-label">Amount</span>
+        <span class="modal-row-val" id="escrowModalAmount">—</span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-row-label">Tranche</span>
+        <span class="modal-row-val" id="escrowModalTranche">—</span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-row-label">Release Time</span>
+        <span class="modal-row-val" style="color:#4ade80">30 seconds</span>
+      </div>
+    </div>
+    <p class="modal-warning">Funds will be locked in XRPL native escrow. The borrower can claim them after the release time.</p>
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" onclick="closeEscrowModal()">Cancel</button>
+      <button class="modal-btn-confirm" id="escrowConfirmBtn" onclick="executeEscrow()">
+        Lock in Escrow
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast">
   <p class="toast-title" id="toastTitle"></p>
@@ -879,13 +990,13 @@
 
   // ── DEMO CONFIG ──
   // Paste Amina's details here
-  const DEMO_SEED    = "paste_amina_seed"
-  const DEMO_ADDRESS = "paste_amina_address"
-  const DEMO_NAME    = "Amina Al-Hassan"
+  const DEMO_SEED    = "paste lender seed"
+  const DEMO_ADDRESS = "paste lender address"
+  const DEMO_NAME    = "User"
 
   // ── INIT ──
   window.addEventListener('load', async () => {
-    await new Promise(r => setTimeout(r, 500))
+    await new Promise(r => setTimeout(r, 2000))
 
     const short = DEMO_ADDRESS.slice(0,6) + '...' + DEMO_ADDRESS.slice(-4)
     document.getElementById('navWalletAddr').textContent = short
@@ -938,11 +1049,68 @@
     console.log("loadBalances error:", e.message)
   }
 }
+//escrow javascript
+function openEscrowModal() {
+  const borrower = document.getElementById('escrowBorrower').value.trim()
+  const amount   = document.getElementById('escrowAmount').value
+  const tranche  = document.getElementById('escrowTranche').value
+
+  if (!borrower || !borrower.startsWith('r')) {
+    showToast('Missing Address', 'Please enter a valid borrower wallet address.', '', 'error')
+    return
+  }
+
+  const short = borrower.slice(0,6) + '...' + borrower.slice(-4)
+  document.getElementById('escrowModalBorrower').textContent = short
+  document.getElementById('escrowModalAmount').textContent   = amount + ' XRP'
+  document.getElementById('escrowModalTranche').textContent  = 'Tranche ' + tranche + ' of 4'
+  document.getElementById('escrowModal').classList.add('open')
+}
+
+function closeEscrowModal() {
+  document.getElementById('escrowModal').classList.remove('open')
+}
+
+async function executeEscrow() {
+  const borrower = document.getElementById('escrowBorrower').value.trim()
+  const amount   = parseInt(document.getElementById('escrowAmount').value)
+  const tranche  = parseInt(document.getElementById('escrowTranche').value)
+  const btn      = document.getElementById('escrowConfirmBtn')
+
+  btn.disabled    = true
+  btn.textContent = 'Creating escrow...'
+
+  try {
+    const result = await createEscrow(DEMO_SEED, borrower, amount, tranche)
+    closeEscrowModal()
+
+    if (result.success) {
+      showToast(
+        'Escrow Created',
+        `${amount} XRP locked in escrow for borrower. They can claim in 30 seconds.`,
+        result.hash,
+        'success'
+      )
+      setTimeout(() => loadPoolBalance(), 3000)
+    } else {
+      showToast('Failed', result.error, '', 'error')
+    }
+  } catch(e) {
+    showToast('Error', e.message, '', 'error')
+  } finally {
+    btn.disabled    = false
+    btn.textContent = 'Lock in Escrow'
+  }
+}
+
+document.getElementById('escrowModal').addEventListener('click', function(e) {
+  if (e.target === this) closeEscrowModal()
+})
 
   // ── LOAD POOL BALANCE ──
   async function loadPoolBalance() {
     try {
-      await new Promise(r => setTimeout(r, 3000))
+      await new Promise(r => setTimeout(r, 4000))
       const balance = await getSDQBalance(POOL_ADDRESS)
       document.getElementById('poolBalance').textContent = balance.toFixed(2)
     } catch(e) {

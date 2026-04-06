@@ -33,15 +33,15 @@ async function main() {
 
   // ── STEP 3: Load your demo wallets ──
   // Paste your seeds from demo_setup.js here
-  const pool   = xrpl.Wallet.fromSeed("paste_pool_seed_here")
-  const amina  = xrpl.Wallet.fromSeed("paste_amina_seed_here")
-  const fatima = xrpl.Wallet.fromSeed("paste_fatima_seed_here")
-  const khalid = xrpl.Wallet.fromSeed("paste_khalid_seed_here")
+  const pool   = xrpl.Wallet.fromSeed("paste pool address")
+  const amina  = xrpl.Wallet.fromSeed("paste lender address")
+  const lana   = xrpl.Wallet.fromSeed("paste borrower address")
+  const khalid = xrpl.Wallet.fromSeed("paste voucher address")
 
   const wallets = [
     { wallet: pool,   name: "Sidiq Pool"   },
     { wallet: amina,  name: "Amina"        },
-    { wallet: fatima, name: "Fatima"       },
+    { wallet: lana,   name: "Lana"       },
     { wallet: khalid, name: "Khalid"       }
   ]
 
@@ -73,7 +73,7 @@ async function main() {
   const distributions = [
     { wallet: pool,   name: "Sidiq Pool",  amount: "10000" },
     { wallet: amina,  name: "Amina",       amount: "500"   },
-    { wallet: fatima, name: "Fatima",      amount: "100"   },
+    { wallet: lana,   name: "Lana",      amount: "100"   },
     { wallet: khalid, name: "Khalid",      amount: "200"   }
   ]
 

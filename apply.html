@@ -307,9 +307,8 @@
 <script src="https://unpkg.com/xrpl@2.7.0/build/xrpl-latest-min.js"></script>
 <script src="sidiq.js"></script>
 <script>
-  const DEMO_SEED    = "paste seed here"
-  const DEMO_ADDRESS = "paste address here"
-  let reputationScore = 50
+  const DEMO_SEED    = "paste borrower seed"
+  const DEMO_ADDRESS = "paste borrower address"
   let questionScores  = {q1:null,q2:null,q3:null,q4:null}
   let loanAmount      = 50
   let borrowingLimit  = 130
@@ -319,14 +318,57 @@
     const short = DEMO_ADDRESS.slice(0,6)+'...'+DEMO_ADDRESS.slice(-4)
     document.getElementById('navWallet').textContent = short
     try {
-      const rep = await getReputation(DEMO_ADDRESS)
-      borrowingLimit = rep.borrowing_limit
-      document.getElementById('amountSlider').max = borrowingLimit
-      document.getElementById('maxLabel').textContent = borrowingLimit+' SDQ'
-      document.getElementById('limitDisplay').textContent = 'Your borrowing limit: '+borrowingLimit+' SDQ'
-    } catch(e) {
-      document.getElementById('limitDisplay').textContent = 'Your borrowing limit: 130 SDQ'
+  const rep = await getReputation(DEMO_ADDRESS)
+  borrowingLimit = rep.borrowing_limit
+
+  // Update reputation display
+  document.getElementById('formRepScore').textContent = rep.score
+  document.getElementById('formRepTier').textContent  = rep.tier
+  document.getElementById('amountLimit').textContent  =
+    `Your borrowing limit: ${rep.borrowing_limit} SDQ`
+
+  const tierDesc = {
+    "Newcomer":    "You can apply for a small starter loan. Build reputation by repaying on time.",
+    "Contributor": "You qualify for medium loans. Keep repaying to unlock the full limit.",
+    "Verified":    "You qualify for the maximum loan amount. Your reputation speaks for itself."
+  }
+
+  if (document.getElementById('formRepDesc')) {
+    document.getElementById('formRepDesc').textContent = tierDesc[rep.tier]
+  }
+
+  // Update eligibility check
+  const eligRep = document.getElementById('eligRep')
+  if (eligRep) {
+    if (rep.score >= 50) {
+      eligRep.innerHTML = `
+        <div class="elig-icon elig-pass">✓</div>
+        <span>Reputation score sufficient — ${rep.score}/100 (${rep.tier})</span>`
+    } else {
+      eligRep.innerHTML = `
+        <div class="elig-icon elig-fail">✕</div>
+        <span>Reputation too low — ${rep.score}/100. Get a community vouch first.</span>`
     }
+  }
+
+  // Update slider
+  document.getElementById('amountSlider').max = rep.borrowing_limit
+  document.getElementById('amountSlider').value = Math.min(20, rep.borrowing_limit)
+  updateAmount(Math.min(20, rep.borrowing_limit))
+
+  if (document.getElementById('maxLabel')) {
+    document.getElementById('maxLabel').textContent = rep.borrowing_limit + ' SDQ'
+  }
+
+} catch(e) {
+  console.log("Reputation load error:", e.message)
+  if (document.getElementById('formRepScore')) {
+    document.getElementById('formRepScore').textContent = '50'
+  }
+  if (document.getElementById('limitDisplay')) {
+    document.getElementById('limitDisplay').textContent = 'Your borrowing limit: 100 SDQ'
+  }
+}
     try {
       const pool = await getPoolBalance()
       document.getElementById('poolBalance').textContent = pool.toFixed(2)+' SDQ available'

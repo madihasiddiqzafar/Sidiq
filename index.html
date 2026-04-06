@@ -1140,16 +1140,16 @@
   }
 
   // Your demo wallet addresses
-  const AMINA_ADDRESS  = "paste_amina_address_here"
-  const FATIMA_ADDRESS = "paste_fatima_address_here"
-  const KHALID_ADDRESS = "paste_khalid_address_here"
+  const AMINA_ADDRESS  = "paste lender address"
+  const LANA_ADDRESS   = "paste borrower address"
+  const KHALID_ADDRESS = "paste voucher address"
 
   localStorage.setItem('sidiq_wallet', addr)
 
   // Route to correct dashboard
   if (addr === AMINA_ADDRESS) {
     window.location.href = 'lender.html'
-  } else if (addr === FATIMA_ADDRESS) {
+  } else if (addr === LANA_ADDRESS) {
     window.location.href = 'dashboard.html'
   } else if (addr === KHALID_ADDRESS) {
     window.location.href = 'vouch.html'
