@@ -45,7 +45,6 @@ Sidiq brings Qard Hasan on chain. Three pillars:
 
 ### Landing Page
 ![Landing Page — Islamic art background with SIDIQ title and Connect Wallet button](assets/screenshots/landing_page.png)
-*Replace this placeholder with your actual screenshot*
 
 ### Borrower Dashboard
 ![Borrower Dashboard — reputation score, active loan, tranche progress, repay button](assets/screenshots/borrower_dashboard.png)
@@ -88,7 +87,7 @@ Sidiq brings Qard Hasan on chain. Three pillars:
 ## Live Testnet Activity
 
 View the Sidiq community pool on the XRPL testnet explorer:
-[testnet.xrpl.org/accounts/rYOURPOOLADDRESS](https://testnet.xrpl.org/accounts/rMNNVayuWnBmxdFJ3NK5C4rTQ1rLhTJHQU)
+[testnet.xrpl.org/accounts/rMNNVayuWnBmxdFJ3NK5C4rTQ1rLhTJHQU](https://testnet.xrpl.org/accounts/rMNNVayuWnBmxdFJ3NK5C4rTQ1rLhTJHQU)
 
 All contributions, escrow disbursements, and repayments are publicly visible.
 
