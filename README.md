@@ -49,19 +49,15 @@ Sidiq brings Qard Hasan on chain. Three pillars:
 
 ### Borrower Dashboard
 ![Borrower Dashboard — reputation score, active loan, tranche progress, repay button](assets/screenshots/borrower_dashboard.png)
-*Replace this placeholder with your actual screenshot*
 
 ### Lender Dashboard
 ![Lender Dashboard — SDQ balance, pool overview, contribution history, release tranche](assets/screenshots/lender_dashboard.png)
-*Replace this placeholder with your actual screenshot*
 
 ### Loan Application
 ![Loan Application — dynamic reputation score, borrowing limit slider, tranche preview](assets/screenshots/apply.png)
-*Replace this placeholder with your actual screenshot*
 
 ### Vouching Page
 ![Vouching Page — borrower reputation preview, 1 SDQ commitment, on-chain vouch](assets/screenshots/vouch.png)
-*Replace this placeholder with your actual screenshot*
 
 ---
 
@@ -92,7 +88,7 @@ Sidiq brings Qard Hasan on chain. Three pillars:
 ## Live Testnet Activity
 
 View the Sidiq community pool on the XRPL testnet explorer:
-[testnet.xrpl.org/accounts/rYOURPOOLADDRESS](https://testnet.xrpl.org/accounts/rYOURPOOLADDRESS)
+[testnet.xrpl.org/accounts/rYOURPOOLADDRESS](https://testnet.xrpl.org/accounts/rMNNVayuWnBmxdFJ3NK5C4rTQ1rLhTJHQU)
 
 All contributions, escrow disbursements, and repayments are publicly visible.
 
@@ -171,6 +167,15 @@ The reputation engine automatically identifies each wallet's role based on trans
 | **Lana** | Borrower | Small business owner applying for a micro-loan |
 | **Khalid Ibrahim** | Voucher | Community member vouching for Lana |
 | **Sidiq Pool** | Pool | Community lending pool wallet holding all contributions |
+
+## Demo Wallet Addresses (Public — Testnet Only)
+
+| Wallet | Address | Role |
+|---|---|---|
+| Sidiq Pool | rMNNVayuWnBmxdFJ3NK5C4rTQ1rLhTJHQU | Community Pool |
+| Amina | rJwLw7XmFb6LCC2NbAHJKUUkD2hscfN1Fx | Lender |
+| Lana | rwSBBoEocUzBPRGvudKs4pBS5TakmWk88 | Borrower |
+| Khalid | rsQCyntjFF5LHKST3qKC9ifmAPMyiPQwHK | Voucher |
 
 ---
 
@@ -372,15 +377,6 @@ Sidiq/
 ```
 
 ---
-## Demo Wallet Addresses (Public — Testnet Only)
-
-| Wallet | Address | Role |
-|---|---|---|
-| Sidiq Pool | rMNNVayuWnBmxdFJ3NK5C4rTQ1rLhTJHQU | Community Pool |
-| Amina | rJwLw7XmFb6LCC2NbAHJKUUkD2hscfN1Fx | Lender |
-| Lana | rwSBBoEocUzBPRGvudKs4pBS5TakmWk88 | Borrower |
-| Khalid | rsQCyntjFF5LHKST3qKC9ifmAPMyiPQwHK | Voucher |
-
 
 ## Key Functions in sidiq.js
 
