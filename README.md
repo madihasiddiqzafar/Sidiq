@@ -47,7 +47,7 @@ Sidiq brings Qard Hasan on chain. Three pillars:
 ![Landing Page — Islamic art background with SIDIQ title and Connect Wallet button](assets/screenshots/landing_page.png)
 
 ### Borrower Dashboard
-![Borrower Dashboard — reputation score, active loan, tranche progress, repay button](assets/screenshots/borrower_dashboard.png)
+![Borrower Dashboard — reputation score, active loan, tranche progress, repay button](borrower_dashboard.png)
 
 ### Lender Dashboard
 ![Lender Dashboard — SDQ balance, pool overview, contribution history, release tranche](assets/screenshots/lender_dashboard.png)
