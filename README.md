@@ -44,19 +44,21 @@ Sidiq brings Qard Hasan on chain. Three pillars:
 ## Screenshots
 
 ### Landing Page
-![Landing Page — Islamic art background with SIDIQ title and Connect Wallet button](assets/screenshots/landing_page.png)
+![Landing Page — Islamic art background with SIDIQ title and Connect Wallet button](landing.png)
 
 ### Borrower Dashboard
 ![Borrower Dashboard — reputation score, active loan, tranche progress, repay button](borrower_dashboard.png)
+![Borrower Dashboard Continued](borrower_dashboard_2.png)
 
 ### Lender Dashboard
-![Lender Dashboard — SDQ balance, pool overview, contribution history, release tranche](assets/screenshots/lender_dashboard.png)
+![Lender Dashboard — SDQ balance, pool overview, contribution history, release tranche](lender_dashboard.png)
+![Lender Dashboard Continued](lender_dashboard_2.png)
 
 ### Loan Application
-![Loan Application — dynamic reputation score, borrowing limit slider, tranche preview](assets/screenshots/apply.png)
+![Loan Application — dynamic reputation score, borrowing limit slider, tranche preview](apply.png)
 
 ### Vouching Page
-![Vouching Page — borrower reputation preview, 1 SDQ commitment, on-chain vouch](assets/screenshots/vouch.png)
+![Vouching Page — borrower reputation preview, 1 SDQ commitment, on-chain vouch](vouch.png)
 
 ---
 
@@ -368,9 +370,11 @@ Sidiq/
     ├── patter_2.jpg              # Persian geometric tilework
     ├── patter_3.jpg              # Mughal interior
     └── screenshots/
-        ├── landing_page.png      
-        ├── borrower_dashboard.png
+        ├── landing.png
+        ├── borrower_dashboard.png     
+        ├── borrower_dashboard_2.png
         ├── lender_dashboard.png  
+        ├── lender_dashboard_2.png                  
         ├── apply.png             
         └── vouch.png             
 ```
