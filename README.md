@@ -1,6 +1,6 @@
 # Sidiq — Interest-Free Community Lending on XRPL
 
-> *Sidiq (صِدِّيق) — Arabic/Urdu for "the truthful". A decentralised interest-free micro-lending protocol built on the XRP Ledger, inspired by the Islamic principle of Qard Hasan.*
+> *Sidiq (صِدِّيق) — Arabic/Urdu for "the truthful". A decentralised interest-free, community micro-lending platform built on the XRP Ledger, inspired by the Islamic principle of Qard Hasan.*
 
 ---
 
@@ -12,11 +12,10 @@
 
 ## What is Sidiq?
 
-Sidiq is a decentralised micro-lending protocol built on the XRP Ledger that gives Muslim and underserved communities access to interest-free micro-loans — without charging a single dirham in interest.
+Sidiq is a decentralised, community-trust based micro-lending application built on the XRP Ledger that gives Muslim and underserved communities access to interest-free micro-loans — without charging interest.
 
 Inspired by the Islamic principle of **Qard Hasan** — a benevolent loan given without expectation of profit — Sidiq replaces the centralised institution with a transparent, community-governed lending pool on the XRP Ledger. Every contribution, application, disbursement, vouch, and repayment is permanently and immutably recorded on chain.
 
-**One liner:** *Sidiq is a decentralised interest-free lending protocol on the XRP Ledger that gives Muslim and underserved communities access to community-backed micro-loans without charging a single dirham in interest.*
 
 ---
 
